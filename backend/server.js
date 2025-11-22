@@ -1,27 +1,24 @@
-import express from "express";
 import http from "http";
+import app from "./src/app.js";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
+import chatSocket from "./src/sockets/socket.js";
 dotenv.config();
 
-const app = express(); // express instance created with name 'app'
 const server = http.createServer(app); // new http server created
+
+// new socket_io instance created
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
-}); // new socket_io instance created
-const port = process.env.PORT;
-
-app.get("/", (req, res) => {
-  res.send("Hello from Chat App...");
 });
 
-// socket_io connection event
-io.on("connection", (socket) => {
-  console.log(`A user connected with id: ${socket.id}`);
-});
+const port = process.env.PORT || 3000;
+
+// socket_io connection events
+chatSocket(io);
 
 // start listening on port with http server instance not express instance
 server.listen(port, () =>
